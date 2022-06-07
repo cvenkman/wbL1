@@ -9,32 +9,25 @@ import (
 )
 
 func main() {
+	arr := []int{2, 3, 4, 6, 8, 10}
+
+	//////// первое решение ////////
 	ch := make(chan int)
 	sum := 0
-	
-	go countSquares([]int{2, 3, 4, 6, 8, 10}, ch)
+
+	// то же самое, что и в 02, но значения из канала прибавляются к sum
+	go countSquares(arr, ch)
 	for sq := range ch {
-		// с предыдущего решения добавила только эту строку
 		sum += sq
 	}
-	fmt.Println(sum) // 229
-
+	fmt.Println(sum)
 
 	//////// второе решение ////////
-	arr := []int{2, 3, 4, 6, 8, 10}
-	wg := sync.WaitGroup{}
-	res := 0
-
-	for _, number := range arr {
-		wg.Add(1)
-		go func(number int) {
-			defer wg.Done()
-			// mutex
-			res += number * number
-		}(number)
-	}
-	wg.Wait()
-	fmt.Println(res) // 229
+	chForDone := make(chan bool)
+	go countSquares2(arr, chForDone)
+	// канал, чтобы заблокировать main, пока
+	// горутина countSquares2 не вычислит все значения
+	<-chForDone
 }
 
 func countSquares(arr []int, ch chan<- int) {
@@ -50,4 +43,20 @@ func countSquares(arr []int, ch chan<- int) {
 	}
 	wg.Wait()
 	close(ch)
+}
+
+// решение без отправки значений в канал
+func countSquares2(arr []int, chForDone chan<- bool) {
+	wg := sync.WaitGroup{}
+	res := 0
+	for _, number := range arr {
+		wg.Add(1)
+		go func(number int) {
+			defer wg.Done()
+			res += number * number
+		}(number)
+	}
+	wg.Wait()
+	chForDone <- true
+	fmt.Println(res)
 }
