@@ -10,13 +10,13 @@ import (
 func main() {
 	var v int64
 	v = 5
-	changeByte(v, 2, 0)
+	ChangeByte(v, 2, 0)
 	// поменять 3й бит на ноль
 	// 5 - 101
 	// 100 - 4
 }
 
-func changeByte(v int64, i, bit int) {
+func ChangeByte(v int64, i, bit int) {
 	// >64 - больше, чем бит в int64, <0 - меньше
 	if i > 64 || i <= 0 {
 		log.Fatal("error")

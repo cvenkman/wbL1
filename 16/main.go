@@ -6,7 +6,8 @@ import "fmt"
 
 func main() {
 	fmt.Println(quicksort([]int{2, 5, 0, 6, 8, 1, -2, -8, 9}))
-	fmt.Println(([]int{2, 1}))
+	fmt.Println(quicksort([]int{2, 1}))
+	fmt.Println(quicksort([]int{2, 1, -4, 5, 0}))
 }
 
 // из массива выбирается некоторый опорный элемент a[i],
@@ -16,34 +17,31 @@ func main() {
 // 3)для обоих подмассивов: если в подмассиве более двух элементов,
 // 		рекурсивно запускаем для него ту же процедуру.
 
-func quicksort(ar []int) {
-	if len(ar) <= 1 {
-		return
+
+func quicksort(arr []int) []int {
+	if len(arr) < 2 {
+		return arr
 	}
-
-	split := partition(ar)
-
-	Quicksort(ar[:split])
-	Quicksort(ar[split:])
-}
-
-func partition(ar []int) int {
-	pivot := ar[len(ar)/2]
 
 	left := 0
-	right := len(ar) - 1
+	right := len(arr) - 1
 
-	for {
-		for ; ar[left] < pivot; left++ {
+	// опорный элемент
+	pivot := (left + right) / 2
+	arr[pivot], arr[right] = arr[right], arr[pivot]
+	
+	for it := range arr {
+		if arr[it] < arr[right] {
+			arr[left], arr[it] = arr[it], arr[left]
+			left++
 		}
-
-		for ; ar[right] > pivot; right-- {
-		}
-
-		if left >= right {
-			return right
-		}
-
-		swap(ar, left, right)
 	}
+
+	arr[left], arr[right] = arr[right], arr[left]
+	// сортируем левую часть
+	quicksort(arr[:left])
+	// сортируем правую часть
+	quicksort(arr[left+1:])
+	return arr
 }
+

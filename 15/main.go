@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 // К каким негативным последствиям может привести данный фрагмент
 // кода, и как это исправить? Приведите корректный пример реализации.
 
@@ -21,16 +19,19 @@ import "fmt"
 
 func main() {
 	// 1 << 10 = 1024
-	fmt.Println(1 << 10)
-}
-
-var justString string
-
-func someFunc() {
-	v := createHugeString(1 << 10)
-	justString = v[:100]
-}
-
-func mainErr() {
 	someFunc()
+}
+
+func someFunc() string {
+	v := createHugeString(1 << 10)
+	justString := v[:100]
+	return justString // возвращать вместо глобальной перемнной
+}
+
+func createHugeString(size int) string {
+	str := make([]rune, size)
+	for i := range str {
+		str[i] = '~'
+	}
+	return string(str)
 }
